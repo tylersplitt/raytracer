@@ -43,7 +43,8 @@ void Sphere :: printSphere() const {
 		<< "\tMaterial: " << printPoint(material) << std::endl
 		<< "}" << std::endl;
 }
-
+//intersection of a Sphere with a ray that returns a time
+//based on equations from lecture
 float Sphere :: intersectRay(Ray ray){
 	float o_min_c[3] = {0,0,0};
 	sub(ray.getOrigin(), center, o_min_c);

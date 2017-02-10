@@ -37,6 +37,8 @@ void Plane :: printPlane() const{
 		<< "}" << std::endl;
 }
 
+//intersection of a Sphere with a ray that returns a time
+//based on equations from lecture
 float Plane :: intersectRay(Ray ray){
 	float d_dot_n = dot(ray.getDirection(),normal);
 	if(d_dot_n == 0)

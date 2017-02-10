@@ -17,6 +17,7 @@
 		"ctime": "cpp",
 		"cstddef": "cpp",
 		"string": "cpp",
-		"iostream": "cpp"
+		"iostream": "cpp",
+		"sstream": "cpp"
 	}
 }

@@ -2,6 +2,9 @@
 #include <string>
 #include <sstream>
 #include <math.h>
+#include "triangle.h"
+#include "plane.h"
+#include "sphere.h"
 #include "func.h"
 
 std::string printPoint(float* point){
@@ -23,6 +26,14 @@ float dot(float* pt1, float* pt2){
 	return x + y + z;
 }
 
+float* cross(float* v1, float* v2, float* ret){
+	ret[0] = v1[1]*v2[2] - v1[2]*v2[1];
+	ret[1] = v1[2]*v2[0] - v1[0]*v2[2];
+	ret[2] = v1[0]*v2[1] - v1[1]*v2[0];
+
+	return ret;
+}
+
 float* sub(float* pt1, float* pt2, float* ret){
 	ret[0] = pt1[0] - pt2[0];
 	ret[1] = pt1[1] - pt2[1];
@@ -31,6 +42,12 @@ float* sub(float* pt1, float* pt2, float* ret){
 }
 
 float* add(float* pt1, float* pt2, float* ret){
+	ret[0] = pt1[0] + pt2[0];
+	ret[1] = pt1[1] + pt2[1];
+	ret[2] = pt1[2] + pt2[2];
+	return ret;
+}
+int* add(int* pt1, int* pt2, int* ret){
 	ret[0] = pt1[0] + pt2[0];
 	ret[1] = pt1[1] + pt2[1];
 	ret[2] = pt1[2] + pt2[2];
@@ -58,6 +75,28 @@ float* div(float* pt, float x, float* ret){
 	return ret;
 }
 
+int* copy(int* pt1, int* ret){
+	ret[0] = pt1[0];
+	ret[1] = pt1[1];
+	ret[2] = pt1[2];
+	return ret;
+}
+
 float norm(float* pt){
 	return sqrt(pt[0] * pt[0] + pt[1] * pt[1] + pt[2] * pt[2]);
+}
+
+int closest(float* t, int n){
+	int maxi = 0;
+	float maxval = t[0];
+	for(int i = 1; i < n; i++){
+		if(t[i] > 0 && (t[i] < maxval || maxval < 0)){
+			maxval = t[i];
+			maxi = i;
+		}
+	}
+	if(maxval < 0)
+		return -1;
+	else
+		return maxi;
 }

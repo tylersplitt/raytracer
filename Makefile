@@ -1,7 +1,7 @@
 all: raytracer exec clean
 
-raytracer: raytracer.o sphere.o plane.o ray.o light.o func.o
-	g++ -o raytracer raytracer.o sphere.o plane.o ray.o light.o func.o -lpthread -lX11
+raytracer: raytracer.o sphere.o plane.o triangle.o ray.o light.o func.o
+	g++ -o raytracer raytracer.o sphere.o plane.o triangle.o ray.o light.o func.o -lpthread -lX11
 
 raytracer.o: raytracer.cpp
 	g++ -c raytracer.cpp -lpthread -lX11
@@ -11,6 +11,9 @@ sphere.o: sphere.cpp sphere.h
 
 plane.o: plane.cpp plane.h
 	g++ -c plane.cpp
+
+triangle.o: triangle.cpp triangle.h
+	g++ -c triangle.cpp
 
 ray.o: ray.cpp ray.h
 	g++ -c ray.cpp
@@ -25,4 +28,4 @@ exec: raytracer
 	./raytracer
 
 clean:
-	rm -f raytracer raytracer.o sphere.o ray.o light.o func.o
+	rm -f raytracer raytracer.o sphere.o plane.o triangle.o ray.o light.o func.o
