@@ -1,31 +1,46 @@
+CXXFLAGS  = -Wall -I.
+FLAGS = -lpthread -lX11 
+
 all: raytracer exec clean
 
-raytracer: raytracer.o sphere.o plane.o triangle.o ray.o light.o func.o
-	g++ -o raytracer raytracer.o sphere.o plane.o triangle.o ray.o light.o func.o -lpthread -lX11
+raytracer: raytracer2.o sphere.o plane.o triangle.o BB.o grid.o ray.o directional_l.o point_l.o func.o 
+	g++ -o raytracer raytracer2.o sphere.o plane.o triangle.o BB.o grid.o ray.o directional_l.o point_l.o func.o $(FLAGS)
 
-raytracer.o: raytracer.cpp
-	g++ -c raytracer.cpp -lpthread -lX11
+raytracer.o: Main/raytracer.cpp
+	g++ -c $(CXXFLAGS) Main/raytracer.cpp $(FLAGS)
 
-sphere.o: sphere.cpp sphere.h
-	g++ -c sphere.cpp
+raytracer2.o: Main/raytracer2.cpp
+	g++ -c $(CXXFLAGS) Main/raytracer2.cpp $(FLAGS)
 
-plane.o: plane.cpp plane.h
-	g++ -c plane.cpp
+sphere.o: Shapes/sphere.cpp Shapes/sphere.h
+	g++ -c $(CXXFLAGS) Shapes/sphere.cpp
 
-triangle.o: triangle.cpp triangle.h
-	g++ -c triangle.cpp
+plane.o: Shapes/plane.cpp Shapes/plane.h
+	g++ -c $(CXXFLAGS) Shapes/plane.cpp
 
-ray.o: ray.cpp ray.h
-	g++ -c ray.cpp
+triangle.o: Shapes/triangle.cpp Shapes/triangle.h
+	g++ -c $(CXXFLAGS) Shapes/triangle.cpp
 
-light.o: light.cpp light.h
-	g++ -c light.cpp
+BB.o: Shapes/BB.cpp Shapes/BB.h
+	g++ -c $(CXXFLAGS) Shapes/BB.cpp
 
-func.o: func.cpp func.h
-	g++ -c func.cpp
+grid.o: Shapes/grid.cpp Shapes/grid.h
+	g++ -c $(CXXFLAGS) Shapes/grid.cpp
+
+ray.o: Main/ray.cpp Main/ray.h
+	g++ -c $(CXXFLAGS) Main/ray.cpp
+
+directional_l.o: Lights/directional_l.cpp Lights/directional_l.h
+	g++ -c $(CXXFLAGS) Lights/directional_l.cpp
+
+point_l.o: Lights/point_l.cpp Lights/point_l.h
+	g++ -c $(CXXFLAGS) Lights/point_l.cpp
+
+func.o: Main/func.cpp Main/func.h
+	g++ -c $(CXXFLAGS) Main/func.cpp
 
 exec: raytracer
 	./raytracer
 
 clean:
-	rm -f raytracer raytracer.o sphere.o plane.o triangle.o ray.o light.o func.o
+	rm -f raytracer **/*.o *.o

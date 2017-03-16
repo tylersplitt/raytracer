@@ -2,12 +2,18 @@
 #include <string>
 #include <sstream>
 #include <math.h>
-#include "triangle.h"
-#include "plane.h"
-#include "sphere.h"
+#include "Shapes/triangle.h"
+#include "Shapes/plane.h"
+#include "Shapes/sphere.h"
 #include "func.h"
 
 std::string printPoint(float* point){
+	std::stringstream sstm;
+	sstm << "(" << point[0] << ", " << point[1] << ", " << point[2] << ")" ;
+	return sstm.str();
+}
+
+std::string printPoint(const float* point){
 	std::stringstream sstm;
 	sstm << "(" << point[0] << ", " << point[1] << ", " << point[2] << ")" ;
 	return sstm.str();
@@ -26,6 +32,27 @@ float dot(float* pt1, float* pt2){
 	return x + y + z;
 }
 
+float dot(float* pt1, const float* pt2){
+	float x = pt1[0] * pt2[0];
+	float y = pt1[1] * pt2[1];
+	float z = pt1[2] * pt2[2];
+	return x + y + z;
+}
+
+float dot(const float* pt1, float* pt2){
+	float x = pt1[0] * pt2[0];
+	float y = pt1[1] * pt2[1];
+	float z = pt1[2] * pt2[2];
+	return x + y + z;
+}
+
+float dot(const float* pt1, const float* pt2){
+	float x = pt1[0] * pt2[0];
+	float y = pt1[1] * pt2[1];
+	float z = pt1[2] * pt2[2];
+	return x + y + z;
+}
+
 float* cross(float* v1, float* v2, float* ret){
 	ret[0] = v1[1]*v2[2] - v1[2]*v2[1];
 	ret[1] = v1[2]*v2[0] - v1[0]*v2[2];
@@ -35,6 +62,20 @@ float* cross(float* v1, float* v2, float* ret){
 }
 
 float* sub(float* pt1, float* pt2, float* ret){
+	ret[0] = pt1[0] - pt2[0];
+	ret[1] = pt1[1] - pt2[1];
+	ret[2] = pt1[2] - pt2[2];
+	return ret;
+}
+
+float* sub(float* pt1, const float* pt2, float* ret){
+	ret[0] = pt1[0] - pt2[0];
+	ret[1] = pt1[1] - pt2[1];
+	ret[2] = pt1[2] - pt2[2];
+	return ret;
+}
+
+float* sub(const float* pt1, float* pt2, float* ret){
 	ret[0] = pt1[0] - pt2[0];
 	ret[1] = pt1[1] - pt2[1];
 	ret[2] = pt1[2] - pt2[2];
@@ -76,6 +117,13 @@ float* div(float* pt, float x, float* ret){
 }
 
 int* copy(int* pt1, int* ret){
+	ret[0] = pt1[0];
+	ret[1] = pt1[1];
+	ret[2] = pt1[2];
+	return ret;
+}
+
+float* copy(float* pt1, float* ret){
 	ret[0] = pt1[0];
 	ret[1] = pt1[1];
 	ret[2] = pt1[2];

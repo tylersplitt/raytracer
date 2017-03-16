@@ -1,9 +1,13 @@
 #include <iostream>
 #include <string>
 #include <math.h>
-#include "ray.h"
+#include "Main/ray.h"
 #include "triangle.h"
-#include "func.h"
+#include "Main/func.h"
+
+Triangle :: Triangle(){
+
+}
 
 Triangle :: Triangle(float* pt1_, float* pt2_, float* pt3_, int* mat){
 	pt1 = pt1_;
@@ -14,6 +18,59 @@ Triangle :: Triangle(float* pt1_, float* pt2_, float* pt3_, int* mat){
 	area = getArea(pt1,pt2,pt3);
 	material = mat;
 	eps = .000001;
+	float * min = new float[3];
+	float * max = new float[3];
+	for(int i = 0; i < 3; i++){
+		if(pt1[i] > pt2[i] && pt1[i] > pt3[i])
+			max[i] = pt1[i];
+		if(pt2[i] > pt1[i] && pt2[i] > pt3[i])
+			max[i] = pt2[i];
+		if(pt3[i] > pt2[i] && pt3[i] > pt1[i])
+			max[i] = pt3[i];
+		if(pt1[i] < pt2[i] && pt1[i] < pt3[i])
+			min[i] = pt1[i];
+		if(pt2[i] < pt1[i] && pt2[i] < pt3[i])
+			min[i] = pt2[i];
+		if(pt3[i] < pt2[i] && pt3[i] < pt1[i])
+			min[i] = pt3[i];
+	}
+	box = new BB(min,max);
+}
+Triangle :: ~Triangle(){
+	delete [] pt1;
+	delete [] pt2;
+	delete [] pt3;
+	delete [] material;
+}
+void Triangle :: setTri(float* pt1_, float* pt2_, float* pt3_, int* mat){
+	pt1 = pt1_;
+	pt2 = pt2_;
+	pt3 = pt3_;
+	setNormal(normal);
+	D = dot(normal,pt1);
+	area = getArea(pt1,pt2,pt3);
+	material = mat;
+	eps = .000001;
+	float * min = new float[3];
+	float * max = new float[3];
+	for(int i = 0; i < 3; i++){
+		if(pt1[i] > pt2[i] && pt1[i] > pt3[i])
+			max[i] = pt1[i];
+		if(pt2[i] > pt1[i] && pt2[i] > pt3[i])
+			max[i] = pt2[i];
+		if(pt3[i] > pt2[i] && pt3[i] > pt1[i])
+			max[i] = pt3[i];
+		if(pt1[i] < pt2[i] && pt1[i] < pt3[i])
+			min[i] = pt1[i];
+		if(pt2[i] < pt1[i] && pt2[i] < pt3[i])
+			min[i] = pt2[i];
+		if(pt3[i] < pt2[i] && pt3[i] < pt1[i])
+			min[i] = pt3[i];
+	}
+	box = new BB(min,max);
+}
+BB* Triangle :: getBox(){
+	return box;
 }
 void Triangle :: setPoint1(float* newPt1){
 	pt1 = newPt1;
@@ -50,9 +107,13 @@ void Triangle :: printTriangle() const{
 
 //https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/ray-triangle-intersection-geometric-solution
 //Built using tut from scratchapixel and lecture slides
-float Triangle :: intersectRay(Ray ray){
-	float n_dot_o = dot(normal,ray.getOrigin());
-	float n_dot_dir = dot(normal,ray.getDirection());
+float Triangle :: intersectRay(Ray *&ray){
+	const float * dir = ray->getDirection();
+
+	const float * ori = ray->getOrigin();
+
+	float n_dot_o = dot(ori,normal);
+	float n_dot_dir = dot(dir,normal);
 
 	float t = (-n_dot_o + D)/n_dot_dir;
 
@@ -60,7 +121,7 @@ float Triangle :: intersectRay(Ray ray){
 		return -1;
 
 	float point[3] = {0,0,0};
-	ray.getPoint(t,point);
+	ray->getPoint(t,point);
 
 	float a1 = getArea(pt3,pt2,point);
 	float a2 = getArea(pt3,pt1,point);

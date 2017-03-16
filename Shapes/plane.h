@@ -1,7 +1,7 @@
 #ifndef PLANE_H
 #define PLANE_H
 
-#include "ray.h"
+#include "Main/ray.h"
 
 class Plane
 {
@@ -13,6 +13,7 @@ class Plane
 
 	public : 
 		Plane(float* point_, float* norm, int* mat);
+		~Plane();
 		void setPoint(float* newPoint);
 		float* getPoint();
 		void setNormal(float* newNormal);
@@ -21,7 +22,7 @@ class Plane
 		int* getMaterial();
 		void printPlane() const;
 
-		float intersectRay(Ray ray);
+		float intersectRay(Ray *&ray);
 
 
 };

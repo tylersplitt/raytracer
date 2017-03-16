@@ -18,6 +18,12 @@
 		"cstddef": "cpp",
 		"string": "cpp",
 		"iostream": "cpp",
-		"sstream": "cpp"
+		"sstream": "cpp",
+		"clocale": "cpp",
+		"exception": "cpp",
+		"initializer_list": "cpp",
+		"typeinfo": "cpp",
+		"fstream": "cpp",
+		"limits": "cpp"
 	}
 }

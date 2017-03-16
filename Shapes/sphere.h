@@ -1,7 +1,8 @@
 #ifndef SPHERE_H
 #define SPHERE_H
 
-#include "ray.h"
+#include "Main/ray.h"
+#include "Shapes/BB.h"
 
 class Sphere
 {
@@ -10,10 +11,15 @@ class Sphere
 		float* center;
 		int* material;
 		float eps;
+		BB * box;
 
 	public : 
 		Sphere(int rad, float* cen, int* mat);
+		Sphere();
+		~Sphere();
 		void setRadius(int newRad);
+		void setSph(int rad, float* cen, int* mat);
+		BB* getBox();
 		int getRadius();
 		void setCenter(float* newCenter);
 		float* getCenter();
@@ -21,7 +27,7 @@ class Sphere
 		int* getMaterial();
 		void printSphere() const;
 
-		float intersectRay(Ray ray);
+		float intersectRay(Ray *&ray);
 		float* getNormal(float* pt, float* ret);
 
 

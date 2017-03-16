@@ -1,15 +1,50 @@
 #include <iostream>
 #include <string>
 #include <math.h>
-#include "ray.h"
 #include "sphere.h"
-#include "func.h"
+#include "Main/func.h"
+#include "Main/ray.h"
+
+Sphere :: Sphere(){
+
+}
 
 Sphere :: Sphere(int rad, float* cen, int* mat){
 		radius = rad;
 		center = cen;
 		material = mat;
+		float min[3] = {0,0,0};
+		float max[3] = {0,0,0};
+		for(int i = 0; i < 3; i++){
+			min[i] = center[i] - rad;
+			max[i] = center[i] + rad;
+		}
+		std::cout << printPoint(min) << std::endl;
+		box = new BB(min,max);
 		eps = .0000001;
+}
+
+Sphere :: ~Sphere(){
+	delete [] center;
+	delete [] material;
+}
+
+void Sphere :: setSph(int rad, float* cen, int* mat){
+		radius = rad;
+		center = cen;
+		material = mat;
+		float * min = new float[3];
+		float * max = new float[3];
+		for(int i = 0; i < 3; i++){
+			min[i] = center[i] - rad;
+			max[i] = center[i] + rad;
+		}
+		box = new BB(min,max);
+		eps = .0000001;
+}
+
+BB* Sphere :: getBox(){
+	return box;
 }
 
 void Sphere :: setRadius(int newRad){
@@ -45,12 +80,17 @@ void Sphere :: printSphere() const {
 }
 //intersection of a Sphere with a ray that returns a time
 //based on equations from lecture
-float Sphere :: intersectRay(Ray ray){
+float Sphere :: intersectRay(Ray *&ray){
+	// return box->intersectRay(ray);
+	const float * dir = ray->getDirection();
+
+	const float * ori = ray->getOrigin();
+
 	float o_min_c[3] = {0,0,0};
-	sub(ray.getOrigin(), center, o_min_c);
+	sub(ori, center, o_min_c);
 	
-	float a = dot(ray.getDirection(), ray.getDirection());
-	float b = 2*dot(o_min_c, ray.getDirection());
+	float a = dot(dir, dir);
+	float b = 2*dot(dir, o_min_c);
 	float c = dot(o_min_c,o_min_c) - radius*radius;
 
 	float insq = b*b - 4*a*c;

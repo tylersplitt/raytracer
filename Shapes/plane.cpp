@@ -1,15 +1,20 @@
 #include <iostream>
 #include <string>
 #include <math.h>
-#include "ray.h"
 #include "plane.h"
-#include "func.h"
+#include "Main/func.h"
+#include "Main/ray.h"
 
 Plane :: Plane(float* point_, float* norm, int* mat){
 	point = point_;
 	normal = norm;
 	material = mat;
 	eps = .0000001;
+}
+Plane :: ~Plane(){
+	delete [] point;
+	delete [] normal;
+	delete [] material;
 }
 void Plane :: setPoint(float* newPoint){
 	point = newPoint;
@@ -39,13 +44,18 @@ void Plane :: printPlane() const{
 
 //intersection of a Sphere with a ray that returns a time
 //based on equations from lecture
-float Plane :: intersectRay(Ray ray){
-	float d_dot_n = dot(ray.getDirection(),normal);
-	if(d_dot_n == 0)
+float Plane :: intersectRay(Ray *&ray){
+	const float * dir = ray->getDirection();
+
+	const float * ori = ray->getOrigin();
+
+	float d_dot_n = dot(dir,normal);
+	if(d_dot_n < eps)
 		return -1;
 	float a_min_o[3] = {0,0,0};
-	sub(point,ray.getOrigin(),a_min_o);
+	sub(point,ori,a_min_o);
 	float t = dot(a_min_o,normal)/d_dot_n;
+	//std::cout << t << std::endl;
 	if(t > eps)
 		return t;
 	return -1;

@@ -1,14 +1,14 @@
-#ifndef LIGHT_H
-#define LIGHT_H
+#ifndef DIRECTIONALL_H
+#define DIRECTIONALL_H
 
-class Light{
+class DirectionalL{
 	private :
 		float* direction;
 		float kd;
 		float illum;
 
 	public : 
-		Light(float* dir, float kd_, float illum_);
+		DirectionalL(float* dir, float kd_, float illum_);
 		void setDirection(float* newDir);
 		float* getDirection();
 		void setKD(float newKD);
@@ -16,7 +16,7 @@ class Light{
 		void setIllum(float newIllum);
 		float getIllum();
 
-		int* phong(float* pt, float* norm, int* mat, int* ret);
+		int* phong(float* norm, int* mat, int* ret);
 
 };
 

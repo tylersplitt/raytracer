@@ -1,7 +1,8 @@
 #ifndef TRIANGLE_H
 #define TRIANGLE_H
 
-#include "ray.h"
+#include "Main/ray.h"
+#include "Shapes/BB.h"
 
 class Triangle
 {
@@ -14,9 +15,14 @@ class Triangle
 		float area;
 		int* material;
 		float eps;
+		BB * box;
 
 	public : 
+		Triangle ();
 		Triangle(float* pt1_, float* pt2_, float* pt3_, int* mat);
+		~Triangle();
+		void setTri(float* pt1_, float* pt2_, float* pt3_, int* mat);
+		BB* getBox();
 		void setPoint1(float* newPt1);
 		float* getPoint1();
 		void setPoint2(float* newPt2);
@@ -28,7 +34,7 @@ class Triangle
 		float getArea(float* point1,float* point2,float* point3);
 		void printTriangle() const;
 
-		float intersectRay(Ray ray);
+		float intersectRay(Ray *&ray);
 		void setNormal(float* ret);
 		float* getNormal();
 
