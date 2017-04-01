@@ -1,33 +1,34 @@
 #ifndef BB_H
 #define BB_H
 
-#include "Main/ray.h"
+#include "Util/ray.h"
+#include "Util/point3D.h"
 
 class BB
 {
 	private :
-		float* min;
-		float* max;
+		Point3D<float>* min;
+		Point3D<float>* max;
 		float eps;
 
 	public : 
-		BB(float* min_, float* max_);
+		BB(Point3D<float>* min_, Point3D<float>* max_);
 		BB();
 		~BB();
-		void setBB(float* min_, float* max_);
-		void setMin(float* newMin);
-		float* getMin();
+		void setBB(Point3D<float>* min_, Point3D<float>* max_);
+		void setMin(Point3D<float>* newMin);
+		Point3D<float>* getMin();
 		float getMinX();
 		float getMinY();
 		float getMinZ();
-		void setMax(float* newMax);
-		float* getMax();
+		void setMax(Point3D<float>* newMax);
+		Point3D<float>* getMax();
 		float getMaxX();
 		float getMaxY();
 		float getMaxZ();
 		void printBox() const;
 		bool overlap(BB *box);
-		bool inBox(float* pt);
+		bool inBox(Point3D<float> pt);
 
 		float intersectRay(Ray *&ray);
 

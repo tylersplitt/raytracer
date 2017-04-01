@@ -9,12 +9,13 @@
 #include "Shapes/triangle.h"
 #include "Shapes/BB.h"
 #include "Shapes/grid.h"
-#include "ray.h"
+#include "Util/ray.h"
 #include "Lights/directional_l.h"
 #include "Lights/point_l.h"
-#include "func.h"
+#include "Util/func.h"
+#include "Util/point3D.h"
 
-using namespace cimg_library;
+using namespace std;
 
 /**
     Spheres ray tracer
@@ -22,13 +23,17 @@ using namespace cimg_library;
 **/
 int main(){
     //Whether or not to use the regular grid acceleration
-    int acc = 0;
+    int acc = 1;
 
     //Camera
-    float* cam = new float[3];
-    cam[0] = 0;
-    cam[1] = 0;
-    cam[2] = 1000;
+    Point3D<float> cam(0,0,1000);
+
+
+    //light constructor
+    Point3D<float> lpos(0, -200, 100);
+    float kd = .75;
+    float illum = 1.0;
+    PointL light(lpos,kd,illum);
 
     //Grid init
     int boxWidth = 512;
@@ -38,27 +43,24 @@ int main(){
     float minx = -(boxWidth/2);
     float miny = -(boxWidth/2);
     float minz = -boxWidth; 
-    std::cout << "Creating grid" << std::endl;
+    cout << "Creating grid" << endl;
     Grid* grid = new Grid(minx, miny, minz, boxWidth, cellWidth);
     Sphere * spheres = new Sphere[numSpheres];
-    std::cout << "Creating spheres" << std::endl;
+    cout << "Creating spheres" << endl;
     //Creates numSpheres spheres within the box specifications
     for(int i = 0; i < numSpheres; i++){
-        float* cent = new float[3];
-        cent[0] = rand() % (boxWidth-sphRad) - (boxWidth-sphRad)/2;
-        cent[1] = rand() % (boxWidth-sphRad) - (boxWidth-sphRad)/2;
-        cent[2] = -(rand() % (boxWidth-sphRad));
-        int* mat = new int[3];
-        mat[0] = rand() % 236 + 20;
-        mat[1] = rand() % 236 + 20;
-        mat[2] = rand() % 236 + 20;
+        Point3D<float>* cent = new Point3D<float>();
+        cent->setX(rand() % (boxWidth-sphRad) - (boxWidth-sphRad)/2);
+        cent->setY(rand() % (boxWidth-sphRad) - (boxWidth-sphRad)/2);
+        cent->setZ(-(rand() % (boxWidth-sphRad)));
+        Point3D<int>* mat = new Point3D<int>(rand() % 236 + 20,rand() % 236 + 20,rand() % 236 + 20);
         spheres[i].setSph(sphRad,cent,mat);
     }
-    std::cout << "Finished making spheres" << std::endl;
+    cout << "Finished making spheres" << endl;
     int curInd = 0;
-    std::vector<int>* gridCells = grid->getGridCells();
+    vector<int>* gridCells = grid->getGridCells();
     int * counts = grid->getCounts();
-    std::cout << "Starting to fill grid" << std::endl;
+    cout << "Starting to fill grid" << endl;
     int imin = grid->getMinX();
     int imax = grid->getMaxX();
     int jmin = grid->getMinY();
@@ -69,14 +71,8 @@ int main(){
     for(int i = imin; i < imax; i+=cellWidth){
         for(int j = jmin; j < jmax; j+=cellWidth){
             for(int k = kmin; k < kmax; k+=cellWidth){
-                float* minC = new float[3];
-                minC[0] = i;
-                minC[1] = j;
-                minC[2] = k;
-                float* maxC = new float[3];
-                maxC[0] = i + cellWidth;
-                maxC[1] = j + cellWidth;
-                maxC[2] = k + cellWidth;
+                Point3D<float>* minC = new Point3D<float>(i,j,k);
+                Point3D<float>* maxC = new Point3D<float>(i+cellWidth,j+cellWidth,k+cellWidth);
                 BB curCell(minC, maxC);
                 for(int x = 0; x < numSpheres; x++){
                     if(curCell.overlap(spheres[x].getBox())){
@@ -88,38 +84,30 @@ int main(){
             }
         }
     }
-    std::cout << "Finished filling grid" << std::endl;
-
-    //light constructor
-    float lpos[3] = {0, -200, 100};
-    float kd = .75;
-    float illum = 1.0;
-    PointL light(lpos,kd,illum);
+    cout << "Finished filling grid" << endl;
 
     //background color
     int background[3] = {0,0,0};
     //image creation
-    CImg<float> img(512,512,1,3);
-    std::cout << "Traversing image" << std::endl;
+    cimg_library::CImg<float> img(512,512,1,3);
+    cout << "Traversing image" << endl;
     for(int i = 0; i < img.height(); i++)
         for(int j = 0; j < img.width(); j++){
-            int* drawColor = new int[3];
-            float* hitPoint = new float[3];
+            Point3D<int> drawColor;
+            Point3D<float> hitPoint;
             //based of code seen in class found at https://github.com/shaffer1/UIllinois_Rendering
             float pixX = (i - img.height()/2.0+.5);
             float pixY = (j - img.width()/2.0+.5);
-            float pixCenter[3] = {pixX, pixY, 0};
+            Point3D<float> pixCenter(pixX, pixY, 0);
             //perspective projection calculation using a camera behind the image
             //ray constructor
-            float* rayOr = new float[3];
-            rayOr[0] = cam[0];
-            rayOr[1] = cam[1];
-            rayOr[2] = cam[2];
-            float* raydir = new float[3];
-            raydir[0] = pixCenter[0] - rayOr[0];
-            raydir[1] = pixCenter[1] - rayOr[1];
-            raydir[2] = pixCenter[2] - rayOr[2];
-            Ray* ray = new Ray(rayOr, raydir);
+            Point3D<float> rayOr(cam);
+            Point3D<float> rayDir;
+            rayDir.setX(pixCenter[0] - rayOr.getX());
+            rayDir.setY(pixCenter[1] - rayOr.getY());
+            rayDir.setZ(pixCenter[2] - rayOr.getZ());
+            Ray* ray = new Ray(rayOr, rayDir);
+            // ray->printRay();
 
             //if acceleration was toggled on
             if(acc){
@@ -153,11 +141,12 @@ int main(){
                 }
                 //draws the sphere
                 if(ct != -1){
-                    ray->getPoint(drawT,hitPoint);
-                    float sphNorm[3] = {0,0,0};
-                    spheres[drawX].getNormal(hitPoint,sphNorm);
-                    light.phong(hitPoint,sphNorm,spheres[drawX].getMaterial(),ray,drawColor);
-                    img.draw_point(i, j, drawColor);
+                    hitPoint = ray->getPoint(drawT);
+                    Point3D<float> sphNorm = spheres[drawX].getNormal(hitPoint);
+                    Point3D<int>* sphMat = spheres[drawX].getMaterial();
+                    drawColor = light.phong(hitPoint,sphNorm,*sphMat,ray);
+                    int col[3] = {drawColor.getX(),drawColor.getY(),drawColor.getZ()};
+                    img.draw_point(i, j, col);
                 }
                 //if no shapes are hit draw the background
                 else{
@@ -174,13 +163,13 @@ int main(){
                 }
                 ct = closest(t,numSpheres);
                 if(ct != -1){
-                    ray->getPoint(t[ct],hitPoint);
-                    float sphNorm[3] = {0,0,0};
-                    spheres[ct].getNormal(hitPoint,sphNorm);
-                    light.phong(hitPoint, sphNorm,spheres[ct].getMaterial(),ray,drawColor);
-                    //shadow calculation
-                    float * shadowDir = new float[3];
-                    sub(light.getPosition(),hitPoint,shadowDir);
+                    hitPoint = ray->getPoint(t[ct]);
+                    Point3D<float> sphNorm = spheres[ct].getNormal(hitPoint);
+                    Point3D<int>* sphMat = spheres[ct].getMaterial();
+                    drawColor = light.phong(hitPoint, sphNorm,*sphMat,ray);
+                    // shadow calculation
+                    Point3D<float> shadowDir;
+                    shadowDir = light.getPosition() - hitPoint;
                     Ray* shadowRay = new Ray(hitPoint, shadowDir);
                     float* t = new float[numSpheres];
                     for(int x = 0; x < numSpheres; x++){
@@ -190,8 +179,10 @@ int main(){
                     float st = closest(t,numSpheres);
                     if(st > 0)
                         img.draw_point(i, j, background);
-                    else
-                        img.draw_point(i, j, drawColor);
+                    else{
+                        int col[3] = {drawColor.getX(),drawColor.getY(),drawColor.getZ()};
+                        img.draw_point(i, j, col);
+                    }
                     delete [] t;
                 }
                 //if no shapes are hit draw the background
@@ -200,11 +191,8 @@ int main(){
                 }
                 delete [] t;
             }
-            delete [] drawColor;
-            delete [] hitPoint;
             delete ray;
         }
-    delete [] cam;
-    img.save_png("test2.png");
+    img.save_png("Pics/test2.png");
     return 0;
 }

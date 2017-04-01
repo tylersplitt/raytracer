@@ -2,10 +2,11 @@
 #include <string>
 #include <math.h>
 #include "BB.h"
-#include "Main/func.h"
-#include "Main/ray.h"
+#include "Util/func.h"
+#include "Util/ray.h"
+#include "Util/point3D.h"
 
-BB :: BB(float* min_, float* max_){
+BB :: BB(Point3D<float>* min_, Point3D<float>* max_){
 	min = min_;
 	max = max_;
 	eps = .0000001;
@@ -14,87 +15,90 @@ BB :: BB(){
 
 }
 BB :: ~BB(){
-	delete [] min;
-	delete [] max;
-}
-void BB :: setBB(float* min_, float* max_){
+	delete min;
+	delete max;
+}	
+void BB :: setBB(Point3D<float>* min_, Point3D<float>* max_){
 	min = min_;
 	max = max_;
 	eps = .0000001;
 }
-void BB :: setMin(float* newMin){
+void BB :: setMin(Point3D<float>* newMin){
+	Point3D<float>* temp = min;
 	min = newMin;
+	delete temp;
 }
-float* BB :: getMin(){
+Point3D<float>* BB :: getMin(){
 	return min;
 }
 float BB :: getMinX(){
-	return min[0];
+	return min->getX();
 }
 float BB :: getMinY(){
-	return min[1];
+	return min->getY();
 }
 float BB :: getMinZ(){
-	return min[2];
+	return min->getZ();
 }
-void BB :: setMax(float* newMax){
+void BB :: setMax(Point3D<float>* newMax){
+	Point3D<float>* temp = max;
 	max = newMax;
+	delete temp;
 }
-float* BB :: getMax(){
+Point3D<float>* BB :: getMax(){
 	return max;
 }
 float BB :: getMaxX(){
-	return max[0];
+	return max->getX();
 }
 float BB :: getMaxY(){
-	return max[1];
+	return max->getY();
 }
 float BB :: getMaxZ(){
-	return max[2];
+	return max->getZ();
 }
 void BB :: printBox() const{
 	std::cout << "BB Object {" << std::endl 
-		<< "\tMin: " << printPoint(min) << std::endl 
-		<< "\tMax: " << printPoint(max) << std::endl 
+		<< "\tMin: " << *min << std::endl 
+		<< "\tMax: " << *max << std::endl 
 		<< "}" << std::endl;
 }
 
 //http://gamedev.stackexchange.com/questions/23748/testing-whether-two-cubes-are-touching-in-space
 bool BB :: overlap(BB *box){
-	return ((min[0] <= box->getMin()[0] && box->getMin()[0] <= max[0]) || (box->getMin()[0] <= min[0] && min[0] <= box->getMax()[0])) &&
-   ((min[1] <= box->getMin()[1] && box->getMin()[1] <= max[1]) || (box->getMin()[1] <= min[1] && min[1] <= box->getMax()[1])) &&
-   ((min[2] <= box->getMin()[2] && box->getMin()[2] <= max[2]) || (box->getMin()[2] <= min[2] && min[2] <= box->getMax()[2])); 
+	return ((min->getX() <= box->getMin()->getX() && box->getMin()->getX() <= max->getX()) || (box->getMin()->getX() <= min->getX() && min->getX() <= box->getMax()->getX())) &&
+   ((min->getY() <= box->getMin()->getY() && box->getMin()->getY() <= max->getY()) || (box->getMin()->getY() <= min->getY() && min->getY() <= box->getMax()->getY())) &&
+   ((min->getZ() <= box->getMin()->getZ() && box->getMin()->getZ() <= max->getZ()) || (box->getMin()->getZ() <= min->getZ() && min->getZ() <= box->getMax()->getZ())); 
 }
 
-bool BB :: inBox(float* pt){
-	return ((min[0] <= pt[0] && pt[0] <= max[0]) && (min[1] <= pt[1] && pt[1] <= max[1]) && (min[2] <= pt[2] && pt[2] <= max[2]));
+bool BB :: inBox(Point3D<float> pt){
+	return ((min->getX() <= pt[0] && pt[0] <= max->getX()) && (min->getY() <= pt[1] && pt[1] <= max->getY()) && (min->getZ() <= pt[2] && pt[2] <= max->getZ()));
 }
 
 //based off code from https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
 float BB :: intersectRay(Ray *&ray){
-	const float * dir = ray->getDirection();
-
-	const float * ori = ray->getOrigin();
+	Point3D<float> dir = ray->getDirection();
+	Point3D<float> ori = ray->getOrigin();
 
 	float tx0,tx1,ty0,ty1,tz0,tz1,tmin,tmax;
-	float invdir[3] = {1/dir[0],1/dir[1],1/dir[2]};
+	Point3D<float> invdir(1/dir.getX(),1/dir.getY(),1/dir.getZ());
 	if(invdir[0] >= 0){
-		tx0 = (min[0] - ori[0])*invdir[0];
-		tx1 = (max[0] - ori[0])*invdir[0];
+		tx0 = (min->getX() - ori.getX())*invdir[0];
+		tx1 = (max->getX() - ori.getX())*invdir[0];
 	}
 	else{
-		tx0 = (max[0] - ori[0])*invdir[0];
-		tx1 = (min[0] - ori[0])*invdir[0];
+		tx0 = (max->getX() - ori.getX())*invdir[0];
+		tx1 = (min->getX() - ori.getX())*invdir[0];
 	}
 	tmin = tx0;
 	tmax = tx1;
 	if(invdir[1] >= 0){
-		ty0 = (min[1] - ori[1])*invdir[1];
-		ty1 = (max[1] - ori[1])*invdir[1];
+		ty0 = (min->getY() - ori.getY())*invdir[1];
+		ty1 = (max->getY() - ori.getY())*invdir[1];
 	}
 	else{
-		ty0 = (max[1] - ori[1])*invdir[1];
-		ty1 = (min[1] - ori[1])*invdir[1];
+		ty0 = (max->getY() - ori.getY())*invdir[1];
+		ty1 = (min->getY() - ori.getY())*invdir[1];
 	}
 	if((tmin > ty1) || (ty0 > tmax))
 		return -1;
@@ -103,12 +107,12 @@ float BB :: intersectRay(Ray *&ray){
 	if(ty1 < tmax)
 		tmax = ty1;
 	if(invdir[2] >= 0){
-		tz0 = (min[2] - ori[2])*invdir[2];
-		tz1 = (max[2] - ori[2])*invdir[2];
+		tz0 = (min->getZ() - ori.getZ())*invdir[2];
+		tz1 = (max->getZ() - ori.getZ())*invdir[2];
 	}
 	else{
-		tz0 = (max[2] - ori[2])*invdir[2];
-		tz1 = (min[2] - ori[2])*invdir[2];
+		tz0 = (max->getZ() - ori.getZ())*invdir[2];
+		tz1 = (min->getZ() - ori.getZ())*invdir[2];
 	}
 	if((tmin > tz1) || (tz0 > tmax))
 		return -1;

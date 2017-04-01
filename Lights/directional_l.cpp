@@ -1,19 +1,19 @@
 #include <math.h>
 #include <iostream>
 #include "directional_l.h"
-#include "Main/func.h"
+#include "Util/func.h"
 
-DirectionalL :: DirectionalL(float* dir, float kd_, float illum_){
-	direction= dir;
+DirectionalL :: DirectionalL(Point3D<float> dir, float kd_, float illum_){
+	direction = dir;
 	kd = kd_;
 	illum = illum_;
 }
 
-void DirectionalL :: setDirection(float* newDir){
+void DirectionalL :: setDirection(Point3D<float> newDir){
 	direction = newDir;
 }
 
-float* DirectionalL :: getDirection(){
+Point3D<float> DirectionalL :: getDirection(){
 	return direction;
 }
 
@@ -33,10 +33,9 @@ float DirectionalL :: getIllum(){
 	return illum;
 }
 
-int* DirectionalL :: phong(float* norm, int* mat,int* ret){
-	float factor = kd*illum*dot(norm,direction);
+Point3D<int> DirectionalL :: phong(Point3D<float> norm, Point3D<int> mat){
+	float factor = kd*illum*direction.dot(norm);
 	if(factor < 0) 
 		factor = 0;
-	mult(mat, factor, ret);
-	return ret;
+	return mat*factor;
 }

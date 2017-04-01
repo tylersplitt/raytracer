@@ -2,20 +2,14 @@
 #include <string>
 #include <math.h>
 #include "grid.h"
-#include "Main/func.h"
-#include "Main/ray.h"
+#include "Util/func.h"
+#include "Util/ray.h"
 
 Grid :: Grid(float minx, float miny, float minz, int boxWidth_, int cellWidth_){
 	boxWidth = boxWidth_;
 	cellWidth = cellWidth_;
-	float * min = new float[3];
-	min[0] = minx;
-	min[1] = miny;
-	min[2] = minz;
-	float * max = new float[3];
-	max[0] = minx + boxWidth;
-	max[1] = miny + boxWidth;
-	max[2] = minz + boxWidth;
+	Point3D<float>* min = new Point3D<float>(minx, miny, minz);
+	Point3D<float>* max = new Point3D<float>(minx+boxWidth, miny+boxWidth, minz+boxWidth);
 	box = new BB(min, max);
 	eps = .0000001;
 
@@ -37,14 +31,8 @@ Grid :: ~Grid(){
 void Grid :: setGrid(float minx, float miny, float minz, int boxWidth_, int cellWidth_){
 	boxWidth = boxWidth_;
 	cellWidth = cellWidth_;
-	float * min = new float[3];
-	min[0] = minx;
-	min[1] = miny;
-	min[2] = minz;
-	float * max = new float[3];
-	max[0] = minx + boxWidth;
-	max[1] = miny + boxWidth;
-	max[2] = minz + boxWidth;
+	Point3D<float>* min = new Point3D<float>(minx, miny, minz);
+	Point3D<float>* max = new Point3D<float>(minx+boxWidth, miny+boxWidth, minz+boxWidth);
 	box = new BB(min, max);
 	eps = .0000001;
 
@@ -58,7 +46,7 @@ void Grid :: setGrid(float minx, float miny, float minz, int boxWidth_, int cell
 BB * Grid :: getBox(){
 	return box;
 }
-float* Grid :: getMin(){
+Point3D<float>* Grid :: getMin(){
 	return box->getMin();
 }
 float Grid :: getMinX(){
@@ -70,7 +58,7 @@ float Grid :: getMinY(){
 float Grid :: getMinZ(){
 	return box->getMinZ();
 }
-float* Grid :: getMax(){
+Point3D<float>* Grid :: getMax(){
 	return box->getMax();
 }
 float Grid :: getMaxX(){
@@ -105,18 +93,23 @@ float Grid :: intersectRay(Ray *&ray){
 }
 //gets first cell the ray hits
 int Grid :: getFirstCell(Ray *&ray){
+	Point3D<float> ori = ray->getOrigin();
+	if(box->inBox(ori)){
+		return getInd(ori);
+	}
 	float t = box->intersectRay(ray);
-	if(t < 0)
+	if(t < eps)
 		return -1;
-	float pt[3] =  {0,0,0};
-	ray->getPoint(t, pt);
+	Point3D<float> pt = ray->getPoint(t);
+	// int i = getInd(pt);
+	// std::cout << i << " " << ori << " " << pt << std::endl;
 	return getInd(pt);
 }
 //Uses code similar to the bounding box intersection but uses 
 //the tmax instead of tmin to get the second plane hit
 int Grid :: getNextCell(Ray *&ray, int curInd){
-	const float * dir = ray->getDirection();
-	const float * ori = ray->getOrigin();
+	Point3D<float> dir = ray->getDirection();
+	Point3D<float> ori = ray->getOrigin();
 
 	int xind = curInd/(rowCells*rowCells);
 	int yind = (curInd - (xind*rowCells*rowCells))/rowCells;
@@ -129,8 +122,8 @@ int Grid :: getNextCell(Ray *&ray, int curInd){
 	float minCellZ = zind*cellWidth + box->getMinZ(); 
 	float maxCellZ = minCellZ + cellWidth;
 
-	float min[3] = {minCellX,minCellY,minCellZ};
-	float max[3] = {maxCellX,maxCellY,maxCellZ};
+	Point3D<float> min(minCellX,minCellY,minCellZ);
+	Point3D<float> max(maxCellX,maxCellY,maxCellZ);
 
 	float tx0,tx1,ty0,ty1,tz0,tz1,tmin,tmax;
 	float invdir[3] = {1/dir[0],1/dir[1],1/dir[2]};
@@ -195,11 +188,18 @@ int Grid :: getNextCell(Ray *&ray, int curInd){
 	return xind*rowCells*rowCells+yind*rowCells+zind;
 }
 //Gets grid index from x,y,z values
-int Grid :: getInd(float* pt){
+int Grid :: getInd(Point3D<float> pt){
 	if(!box->inBox(pt))
 		return -1;
 	int xind = (pt[0] - box->getMinX())/cellWidth;
+	if(xind == rowCells)
+		xind = rowCells - 1;
 	int yind = (pt[1] - box->getMinY())/cellWidth;
-	int zind = (pt[2] - box->getMinZ())/cellWidth-1;
+	if(yind == rowCells)
+		yind = rowCells - 1;
+	int zind = (pt[2] - box->getMinZ())/cellWidth;
+	if(zind == rowCells)
+		zind = rowCells - 1;
+	// std::cout << Point3D<int>(xind,yind,zind)  << std::endl;
 	return xind*rowCells*rowCells + yind*rowCells + zind;
 }

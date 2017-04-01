@@ -1,25 +1,29 @@
 #ifndef PLANE_H
 #define PLANE_H
 
-#include "Main/ray.h"
+#include "Util/ray.h"
+#include "Util/point3D.h"
 
 class Plane
 {
 	private :
-		float* normal;
-		float* point;
-		int* material;
+		Point3D<float>* normal;
+		Point3D<float>* point;
+		Point3D<int>* material;
 		float eps;
 
 	public : 
-		Plane(float* point_, float* norm, int* mat);
+		Plane(Point3D<float>* point_, Point3D<float>* norm, Point3D<int>* mat);
+		Plane();
 		~Plane();
-		void setPoint(float* newPoint);
-		float* getPoint();
-		void setNormal(float* newNormal);
-		float* getNormal();
-		void setMaterial(int* newMaterial);
-		int* getMaterial();
+		void setPlane(Point3D<float>* point_, Point3D<float>* norm, Point3D<int>* mat);
+
+		void setPoint(Point3D<float>* newPoint);
+		Point3D<float>* getPoint();
+		void setNormal(Point3D<float>* newNormal);
+		Point3D<float>* getNormal();
+		void setMaterial(Point3D<int>* newMaterial);
+		Point3D<int>* getMaterial();
 		void printPlane() const;
 
 		float intersectRay(Ray *&ray);

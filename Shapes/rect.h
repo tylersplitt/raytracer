@@ -1,16 +1,17 @@
-#ifndef TRIANGLE_H
-#define TRIANGLE_H
+#ifndef RECT_H
+#define RECT_H
 
 #include "Util/ray.h"
 #include "Util/point3D.h"
 #include "BB.h"
 
-class Triangle
+class Rect
 {
 	private :
 		Point3D<float>* pt1;
 		Point3D<float>* pt2;
 		Point3D<float>* pt3;
+		Point3D<float>* pt4;
 		Point3D<float> normal;
 		float D;
 		float area;
@@ -19,10 +20,10 @@ class Triangle
 		BB * box;
 
 	public : 
-		Triangle ();
-		Triangle(Point3D<float>* pt1_, Point3D<float>* pt2_, Point3D<float>* pt3_, Point3D<int>* mat);
-		~Triangle();
-		void setTri(Point3D<float>* pt1_, Point3D<float>* pt2_, Point3D<float>* pt3_, Point3D<int>* mat);
+		Rect ();
+		Rect(Point3D<float>* pt1_, Point3D<float>* pt2_, Point3D<float>* pt3_, Point3D<float>* pt4_, Point3D<int>* mat);
+		~Rect();
+		void setTri(Point3D<float>* pt1_, Point3D<float>* pt2_, Point3D<float>* pt3_, Point3D<float>* pt4_, Point3D<int>* mat);
 		BB* getBox();
 		void setPoint1(Point3D<float>* newPt1);
 		Point3D<float>* getPoint1();
@@ -30,10 +31,14 @@ class Triangle
 		Point3D<float>* getPoint2();
 		void setPoint3(Point3D<float>* newPt3);
 		Point3D<float>* getPoint3();
+		void setPoint4(Point3D<float>* newPt4);
+		Point3D<float>* getPoint4();
 		void setMaterial(Point3D<int>* newMaterial);
 		Point3D<int>* getMaterial();
+		float getArea();
 		float getArea(Point3D<float>  point1,Point3D<float> point2,Point3D<float> point3);
-		void printTriangle() const;
+		float getArea(Point3D<float>  point1,Point3D<float> point2,Point3D<float> point3,Point3D<float> point4);
+		void printRect() const;
 
 		float intersectRay(Ray *&ray);
 		Point3D<float> setNormal();

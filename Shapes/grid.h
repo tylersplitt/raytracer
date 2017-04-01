@@ -2,7 +2,8 @@
 #define GRID_H
 
 #include <vector>
-#include "Main/ray.h"
+#include "Util/ray.h"
+#include "Util/point3D.h"
 #include "Shapes/BB.h"
 
 class Grid
@@ -23,11 +24,11 @@ class Grid
 		~Grid();
 		void setGrid(float minx, float miny, float minz, int boxWidth_, int cellWidth);
 		BB * getBox();
-		float* getMin();
+		Point3D<float>* getMin();
 		float getMinX();
 		float getMinY();
 		float getMinZ();
-		float* getMax();
+		Point3D<float>* getMax();
 		float getMaxX();
 		float getMaxY();
 		float getMaxZ();
@@ -40,7 +41,7 @@ class Grid
 		std::vector<int>* getGridCells();
 		int* getCounts();
 
-		int getInd(float* pt);
+		int getInd(Point3D<float> pt);
 		float intersectRay(Ray *&ray);
 		int getFirstCell(Ray *&ray);
 		int getNextCell(Ray *&ray, int curInd);

@@ -5,7 +5,7 @@ Code written using VSCode and in C++
 
 Image processing library CImg used
 
-In Makefile, use raytracer2.cpp for spheres and raytracer.cpp for cow
+In Makefile, use raytracer3.cpp for reflected spheres lit by area light and raytracer4.cpp for cow instancing attempt
 
 Folder mp1pics contains the 5 pictures that were on the assignment mp1.
 
@@ -15,7 +15,20 @@ Folder mp2pics contains the 2 pictures that were on the assignment mp2.
 	spheres.png contains a rendering of many spheres in front of the camera 
 		using a point light with specular and diffuse reflections as well as shadows.
 
-MP2 Google doc link: https://docs.google.com/document/d/1INN31AYnI4K1SPYwHzv-urN0GGfs8DJrewOSgw2h97k/edit?usp=sharing
+Folder mp3pics contains 3 pictures
+	mp3-1.png contains one perspective of a scene containing two spheres lit 
+		by an area light and reflected in a mirror
+	mp3-2.png is another perspective of the same scene
+	mp3-3.png is an image of a cow lit by an area light and reflected in a mirror
+			The image is very buggy. 
+			The cow is an instance but I only managed to get one instance to appear
+			before I ran out of time.
+
+The cow image used 64 rays per shadow and used a total of 16411308 rays
+	 and ran in about 6 minutes
+
+The spheres image used 256 rays per shadow and used a total of 64635588 rays 
+	and ran in about 1 minute
 
 Code runs on Ubuntu 14.4 but I havent tried it elsewhere
 
